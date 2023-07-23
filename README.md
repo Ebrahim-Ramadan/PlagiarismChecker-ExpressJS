@@ -33,7 +33,9 @@ For an extra challenge: You can add a PDF generation pipeline that allows the us
 ## **My solution**
 <br><br>
 passing the search words as a query for the RunGoogleSearch function at '/api/google-search'.
-<br> By puppeteer, it scrapes the top 10 websites' links as results in google search, then <br> executing a concurrent functionality to visit each URL concurrently to improve the performance and reduce the overall scraping time. Concurrency allows you to process multiple URLs simultaneously, making the most of available system resources and network connections.
+<br> Puppeteer is a product for browser automation. When installed, it downloads a version of Chrome, which it then drives using puppeteer-core. Being an end-user product, puppeteer automates several workflows using reasonable defaults that can be customized.
+<br>
+By puppeteer, it scrapes the top 10 websites' links as results in google search, then <br> executing a concurrent functionality to visit each URL concurrently to improve the performance and reduce the overall scraping time. Concurrency allows you to process multiple URLs simultaneously, making the most of available system resources and network connections.
 <br>
 And, scraping the main context using certain CSS selectors like 'main'|'article'|'p'|... those css used by modular websites <br>
 then finally writing into txt file the whole resulted texts appended so it becomes easier to search to see how many -only if- the search query exists in that txt file or not to ouput with the final percentage of the plagiarism

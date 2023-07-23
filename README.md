@@ -35,6 +35,12 @@ For an extra challenge: You can add a PDF generation pipeline that allows the us
 passing the search words as a query for the RunGoogleSearch function at '/api/google-search'.
 <br> Puppeteer is a product for browser automation. When installed, it downloads a version of Chrome, which it then drives using puppeteer-core. Being an end-user product, puppeteer automates several workflows using reasonable defaults that can be customized.
 <br>
+
+
+https://github.com/Ebrahim-Ramadan/PlagiarismChecker-ExpressJS/assets/65041082/b494ea56-6b7b-4d8a-8629-fbd04201da83
+
+
+<br>
 By puppeteer, it retrieves the top 10 websites' links as results in google search, then <br> executing a concurrent functionality to visit each URL concurrently to improve the performance and reduce the overall scraping time. Concurrency allows you to process multiple URLs simultaneously, making the most of available system resources and network connections.
 <br>
 And, scraping the main context using certain CSS selectors like 'main'|'article'|'p'|... those selectors used by modular websites rn <br>

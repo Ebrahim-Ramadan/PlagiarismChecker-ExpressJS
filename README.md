@@ -1,5 +1,5 @@
 # PlagiarismChecker-ExpressJS
-#### Expressjs nodejs server with API endpoint to run google search function and scraping main&amp;article text from top 10 browed pages.
+#### Expressjs nodejs server with API endpoint to run google search function and scraping main&amp;article text from top 10 browsed pages.
 <br>
 This Repo project is trying to solve [this challenge](https://www.codementor.io/projects/web/plagiarism-checker-website-atx32nf0oa)
 <br>

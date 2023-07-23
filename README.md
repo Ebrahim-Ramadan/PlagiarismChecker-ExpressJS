@@ -29,9 +29,9 @@ Return a percentage of how similar the uploaded content is to the scraped conten
 Return the similar parts of the content with a link to the original scraped URL.<br>
 For an extra challenge: You can add a PDF generation pipeline that allows the user to download the results in a PDF formatted report.
 <br>
-<br>
-My solution
-<br>
+<br><br><br>
+**My solution**
+<br><br>
 passing the search words as a query for the RunGoogleSearch function at '/api/google-search'.
 <br> By puppeteer, it scrapes the top 10 websites' links as results in google search, then <br> executing a concurrent functionality to visit each URL concurrently to improve the performance and reduce the overall scraping time. Concurrency allows you to process multiple URLs simultaneously, making the most of available system resources and network connections.
 <br>

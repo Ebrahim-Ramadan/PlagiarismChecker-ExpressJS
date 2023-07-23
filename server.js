@@ -43,7 +43,7 @@ const performGoogleSearch = async (query) => {
     await page.goto(url, { waitUntil: 'domcontentloaded' , timeout: 30000});
 
     // Wait for the search results to load
-    await page.waitForSelector('div.g', { timeout: 5000 });
+    await page.waitForSelector('div.g', { timeout: 20000 });
 
     // Extract the search results
     const searchResults = await page.evaluate(() => {
@@ -80,7 +80,25 @@ const scrapeUrls = async (urls) => {
       userAgent:
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
     });
+    const pages = await Promise.all(
+      Array.from({ length: concurrencyLimit }).map(async () => {
+        const page = await browser.newPage();
 
+        // Enable request interception
+        await page.setRequestInterception(true);
+
+        // Intercept requests to exclude certain file types (e.g., JavaScript)
+        page.on('request', (request) => {
+          if (request.resourceType() === 'script') {
+            request.abort();
+          } else {
+            request.continue();
+          }
+        });
+
+        return page;
+      })
+    );
     // Split the URLs into smaller chunks based on the concurrency limit
     const urlChunks = [];
     for (let i = 0; i < urls.length; i += concurrencyLimit) {
@@ -103,7 +121,7 @@ const scrapeUrls = async (urls) => {
           });
 
           // Wait for the element that contains the main content to appear
-          await page.waitForSelector('main', { timeout: 30000 });
+          await page.waitForSelector('main', { timeout: 20000 });
 
           const bodyText = await page.evaluate(() => {
             const bodyElements = document.querySelectorAll('main'); // Adjust this selector as needed
@@ -123,7 +141,7 @@ const scrapeUrls = async (urls) => {
     };
 
     // Run the chunks concurrently
-    await Promise.all(urlChunks.map(processChunk));
+    await Promise.all(urlChunks.map(processChunk)); 
 
     // Write all the accumulated content to a single text file
     const filename = `scraped_all_${Date.now()}.txt`;

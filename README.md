@@ -1,14 +1,14 @@
 # PlagiarismChecker-ExpressJS
 #### Expressjs nodejs server with API endpoint to run google search function and scraping main&amp;article text from top 10 browed pages
 <br>
-**This Repo project is trying to solve [this challenge](https://www.codementor.io/projects/web/plagiarism-checker-website-atx32nf0oa)**
+#### **This Repo project is trying to solve [this challenge](https://www.codementor.io/projects/web/plagiarism-checker-website-atx32nf0oa)**
 <br>
-Introduction<br>
+### Introduction<br>
 You'll be building an automated solution that handles plagiarism detection.
 <br><br>
 This might be used for publishing companies to replace a manual process in which they search for phrases from submitted manuscripts on Google to find pre-existing work.
 <br><br>
-Requirements<br>
+### Requirements<br>
 Your task is to build a web application where a user can upload a file (e.g. an MS Word document or Google Doc file) and get matches for similar content around the Internet.
 <br><br>
 In the back-end, your program should read the content from the uploaded file, extract some random phrases of around 5-10 words each, and run a Google search on them.
@@ -17,7 +17,7 @@ The program should then load the pages for each of the top five Google search re
 <br><br>
 The program should then return a percentage of how similar the content is and also list the similar phrases and original URLs.<br><br>
 
-More specifically, the program should:<br>
+#### More specifically, the program should:<br>
 <br>
 Consist of a web page where the user can upload a document.<br>
 Extract random phrases from the document.<br>
@@ -30,7 +30,7 @@ Return the similar parts of the content with a link to the original scraped URL.
 For an extra challenge: You can add a PDF generation pipeline that allows the user to download the results in a PDF formatted report.
 <br>
 <br><br><br>
-**My solution**
+## **My solution**
 <br><br>
 passing the search words as a query for the RunGoogleSearch function at '/api/google-search'.
 <br> By puppeteer, it scrapes the top 10 websites' links as results in google search, then <br> executing a concurrent functionality to visit each URL concurrently to improve the performance and reduce the overall scraping time. Concurrency allows you to process multiple URLs simultaneously, making the most of available system resources and network connections.

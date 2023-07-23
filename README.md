@@ -35,7 +35,8 @@ For an extra challenge: You can add a PDF generation pipeline that allows the us
 passing the search words as a query for the RunGoogleSearch function at '/api/google-search'.
 <br> Puppeteer is a product for browser automation. When installed, it downloads a version of Chrome, which it then drives using puppeteer-core. Being an end-user product, puppeteer automates several workflows using reasonable defaults that can be customized.
 <br>
-By puppeteer, it scrapes the top 10 websites' links as results in google search, then <br> executing a concurrent functionality to visit each URL concurrently to improve the performance and reduce the overall scraping time. Concurrency allows you to process multiple URLs simultaneously, making the most of available system resources and network connections.
+By puppeteer, it retrieves the top 10 websites' links as results in google search, then <br> executing a concurrent functionality to visit each URL concurrently to improve the performance and reduce the overall scraping time. Concurrency allows you to process multiple URLs simultaneously, making the most of available system resources and network connections.
 <br>
-And, scraping the main context using certain CSS selectors like 'main'|'article'|'p'|... those css used by modular websites <br>
+And, scraping the main context using certain CSS selectors like 'main'|'article'|'p'|... those selectors used by modular websites rn <br>
 then finally writing into txt file the whole resulted texts appended so it becomes easier to search to see how many -only if- the search query exists in that txt file or not to ouput with the final percentage of the plagiarism
+<br> The next missing is to implement a higher order func to accept paragraphs, split it into individual sentences so that each phrase runs the defined flow functions in this current repo. <br> that's the logic uf you guys have something better of implementation just fork

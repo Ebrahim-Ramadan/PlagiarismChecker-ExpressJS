@@ -1,7 +1,12 @@
 const express = require('express');
-const app = express();
+const { CosineSimilarity } = require('cosine-similarity');
+const TfIdf = require('tf-idf');
+// const natural = require('natural');
+// const tokenizer = new natural.WordTokenizer();
 const puppeteer = require('puppeteer');
 const NodeCache = require('node-cache');
+
+const app = express();
 const cache = new NodeCache({ stdTTL: 100, checkperiod: 120 }); // TTL set to 60 seconds (cache expires after 60 seconds):
 //////// explaining the params:
 // the standard ttl as number in seconds for every generated cache element. 0 = unlimited.
@@ -20,18 +25,23 @@ app.get('/search/:query', async (req, res) => {
    res.json(cachedData);
  }
  else {
-  const start = performance.now();
+   const start = performance.now();
+   
   const searchResults = await googleSearch(query);
   const top5Results = searchResults.slice(0, 5);
-   const scrapedData = await scrapeTopResults(top5Results);
+  const scrapedData = await scrapeTopResults(top5Results);
+   const cosinePercetange = calculateCosineSimilarity(query, scrapedData)
    
   // Store the scraped data in the cache
-   cache.set(query, scrapedData)
-     ;
+  cache.set(query, scrapedData);
+
   const end = performance.now();
   const totalTime = end - start;
-  console.log(scrapedData)
+   
+  // console.log(scrapedData)
+  console.log('cosinePercetange ', cosinePercetange);
   console.log('Total Time (ms):', totalTime);
+   
   res.json(scrapedData);
 }
   } catch (error) {
@@ -49,6 +59,15 @@ async function googleSearch(query) {
         });
   const page = await browser.newPage();
 
+  //avoiding loading nay type of other non-text
+  // await page.setRequestInterception(true);
+  // page.on('request', (request) => {
+  //   if (request.resourceType() === 'image' || request.resourceType() === 'stylesheet' || request.resourceType() === 'font') {
+  //     request.abort();
+  //   } else {
+  //     request.continue();
+  //   }
+  // });
   const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
   await page.goto(searchUrl);
 
@@ -58,13 +77,14 @@ async function googleSearch(query) {
   const searchResults = await page.evaluate(() => {
     const results = [];
     const searchElements = document.querySelectorAll('h3');
-    searchElements.forEach((element) => {
-      results.push(element.parentElement.href);
-    });
+    for (let i = 0; i < Math.min(searchElements.length, 5); i++) {
+      results.push(searchElements[i].parentElement.href);
+    }
     return results;
   });
 
   await browser.close();
+  console.log(searchResults)
   return searchResults;
 }
 
@@ -74,6 +94,12 @@ async function scrapeTopResults(topResults) {
 
   for (const result of topResults) {
     try {
+      if (!result) {
+        console.log('Skipping null URL...');
+        continue;
+      }
+
+      console.log('Processing URL:', result);
         const browser = await puppeteer.launch({
           //headless:new >> modern headless puppeteer
         headless: 'new',
@@ -99,9 +125,43 @@ async function scrapeTopResults(topResults) {
       console.error('Error scraping page:', error);
     }
   }
-
+console.log(scrapedData)
   return scrapedData;
 }
+
+
+// cosineCalc - text similarity metric:
+//This func calcs the cosine similarity between two text documents -both scrapped and the query- using the "Term Frequency-Inverse Document Frequency" (TF-IDF) algorithm, which represents the importance of each word in the text. 
+function calculateCosineSimilarity(query, scrapedData) {
+  try {
+    // Extract the content from scrapedData array and join it as a single string
+    const scrapedText = scrapedData.map(data => data.content).join('\n');
+
+    // Tokenize the query and scrapedText
+    const tokens1 = query.split(/\s+/);
+    const tokens2 = scrapedText.split(/\s+/);
+    console.log('token1', tokens1);
+    console.log('token2', tokens2);
+    // Initialize tf-idf vectors
+    const tfidf = new TfIdf();
+    tfidf.addDocument(tokens1);
+    tfidf.addDocument(tokens2);
+
+    // Get the vectors and calculate cosine similarity
+    const vector1 = tfidf.getVector(0);
+    const vector2 = tfidf.getVector(1);
+    const similarity = new CosineSimilarity().getSimilarity(vector1, vector2);
+
+    console.log('Cosine Similarity:', similarity); // Log the cosine similarity
+    return similarity;
+  } catch (err) {
+    console.log('Error calculating cosine similarity:', err);
+    return 0; // Or any default value indicating the calculation failed
+  }
+}
+
+
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

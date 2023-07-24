@@ -52,7 +52,9 @@ then finally writing into txt file the whole resulted texts appended so it becom
  
 <br>
 
- https://github.com/Ebrahim-Ramadan/PlagiarismChecker-ExpressJS/assets/65041082/3cfd0a7c-3e8e-4177-ad1c-93f5b9221307 
+![Screenshot 2023-07-25 004058](https://github.com/Ebrahim-Ramadan/PlagiarismChecker-ExpressJS/assets/65041082/693821e0-5c3c-475e-8520-56144882663f)
+![Screenshot 2023-07-25 004114](https://github.com/Ebrahim-Ramadan/PlagiarismChecker-ExpressJS/assets/65041082/80b1487c-5476-4996-b9b2-fe41da41c3ca)
+
 
 <br>
 <br>

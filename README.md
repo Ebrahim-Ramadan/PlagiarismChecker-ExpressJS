@@ -3,12 +3,14 @@
 <br>
 This Repo project is trying to solve https://www.codementor.io/projects/web/plagiarism-checker-website-atx32nf0oa 
 <br>
-### Introduction<br>
+### Introduction.
+<br>
 You'll be building an automated solution that handles plagiarism detection.
 <br><br>
 This might be used for publishing companies to replace a manual process in which they search for phrases from submitted manuscripts on Google to find pre-existing work.
 <br><br>
-### Requirements<br>
+### Requirements.
+<br>
 Your task is to build a web application where a user can upload a file (e.g. an MS Word document or Google Doc file) and get matches for similar content around the Internet.
 <br><br>
 In the back-end, your program should read the content from the uploaded file, extract some random phrases of around 5-10 words each, and run a Google search on them.
@@ -30,7 +32,8 @@ Return the similar parts of the content with a link to the original scraped URL.
 For an extra challenge: You can add a PDF generation pipeline that allows the user to download the results in a PDF formatted report.
 <br>
 <br><br><br>
-## **My solution**
+## My solution
+
 <br><br>
 passing the search words as a query for the RunGoogleSearch function at '/api/google-search'.
 <br> Puppeteer is a product for browser automation. When installed, it downloads a version of Chrome, which it then drives using puppeteer-core. Being an end-user product, puppeteer automates several workflows using reasonable defaults that can be customized.
@@ -64,8 +67,8 @@ the whole process takes around 2851.7ms per URL visit
 day2=> Added TfIdf and cosine similarity to calculate the text similarity between the quered phrase and the significant words of the scrapped data -- step one to finalize the plagiarism checking percentage big part lets celebrate
 
 <br><br><br>
-##steps to follow
-###make a GET request in postman (or whatever you're testing your API with) to that endpoint
+## steps to follow
+### make a GET request in postman (or whatever you're testing your API with) to that endpoint
 <br>
 http://localhost:3000/search/:query
 <br>

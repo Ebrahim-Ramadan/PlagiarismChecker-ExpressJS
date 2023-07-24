@@ -46,3 +46,14 @@ By puppeteer, it retrieves the top 10 websites' links as results in google searc
 And, scraping the main context using certain CSS selectors like 'main'|'article'|'p'|... those selectors used by modular websites rn <br>
 then finally writing into txt file the whole resulted texts appended so it becomes easier to search to see how many -only if- the search query exists in that txt file or not to ouput with the final percentage of the plagiarism
 <br> The next missing is to implement a higher order func to accept paragraphs, split it into individual sentences so that each phrase runs the defined flow functions in this current repo. <br> that's the logic uf you guys have something better of implementation just fork
+<br><br>
+![Screenshot 2023-07-25 004114](https://github.com/Ebrahim-Ramadan/PlagiarismChecker-ExpressJS/assets/65041082/4346f5fe-dc44-4fd7-a307-b4f0ed8d2d78)
+![Uploading Screenshot 2023-07-25 004058.png…]()
+
+<br>
+<br>
+the whole process takes around 2851.7ms per URL visit
+<br>
+<br>
+day2=> Added TfIdf and cosine similarity to calculate the text similarity between the quered phrase and the significant words of the scrapped data -- step one to finalize the plagiarism checking percentage big part lets celebrate
+

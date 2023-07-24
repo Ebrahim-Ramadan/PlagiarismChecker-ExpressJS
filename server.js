@@ -1,21 +1,39 @@
 const express = require('express');
 const app = express();
 const puppeteer = require('puppeteer');
+const NodeCache = require('node-cache');
+const cache = new NodeCache({ stdTTL: 100, checkperiod: 120 }); // TTL set to 60 seconds (cache expires after 60 seconds):
+//////// explaining the params:
+// the standard ttl as number in seconds for every generated cache element. 0 = unlimited.
+// checkperiod: (default: 600) The period in seconds, as a number, used for the automatic delete check interval. 0 = no periodic check.
+
 
 const PORT = 3000;
 
 app.get('/search/:query', async (req, res) => {
   try {
     const query = req.params.query;
-    const start = performance.now();
-    const searchResults = await googleSearch(query);
-    const top5Results = searchResults.slice(0, 5);
-    const scrapedData = await scrapeTopResults(top5Results);
-    const end = performance.now();
-    const totalTime = end - start;
-    console.log(scrapedData)
-    console.log('Total Time (ms):', totalTime);
-    res.json(scrapedData);
+ // Check if the data is present in the cache
+ const cachedData = cache.get(query);
+ if (cachedData) {
+   console.log('Data was cached,  retrieved from cache.');
+   res.json(cachedData);
+ }
+ else {
+  const start = performance.now();
+  const searchResults = await googleSearch(query);
+  const top5Results = searchResults.slice(0, 5);
+   const scrapedData = await scrapeTopResults(top5Results);
+   
+  // Store the scraped data in the cache
+   cache.set(query, scrapedData)
+     ;
+  const end = performance.now();
+  const totalTime = end - start;
+  console.log(scrapedData)
+  console.log('Total Time (ms):', totalTime);
+  res.json(scrapedData);
+}
   } catch (error) {
     res.status(500).json({ error: 'An error occurred' });
   }

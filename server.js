@@ -7,10 +7,14 @@ const PORT = 3000;
 app.get('/search/:query', async (req, res) => {
   try {
     const query = req.params.query;
+    const start = performance.now();
     const searchResults = await googleSearch(query);
     const top5Results = searchResults.slice(0, 5);
     const scrapedData = await scrapeTopResults(top5Results);
-console.log(scrapedData)
+    const end = performance.now();
+    const totalTime = end - start;
+    console.log(scrapedData)
+    console.log('Total Time (ms):', totalTime);
     res.json(scrapedData);
   } catch (error) {
     res.status(500).json({ error: 'An error occurred' });

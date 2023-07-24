@@ -1,165 +1,86 @@
 const express = require('express');
 const app = express();
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const jsonParser = bodyParser.json();
 const puppeteer = require('puppeteer');
-const fs = require('fs');
 
-app.use(jsonParser);
-app.use(cors());
+const PORT = 3000;
 
-app.get('/', (req, res) => {
-  res.send('from server');
-});
-
-
-app.post('/api/google-search', async (req, res) => {
+app.get('/search/:query', async (req, res) => {
   try {
-    const { i: query }  = req.body;
-    console.log(query);
-
-    // Use Puppeteer to perform the Google search
-    const searchResults = await performGoogleSearch(query);
-    const ContentResults = await scrapeUrls(searchResults)
-console.log(searchResults, ContentResults);
-    // Send the search results back to the client
-    res.json({ searchResults, ContentResults });
+    const query = req.params.query;
+    const searchResults = await googleSearch(query);
+    const top5Results = searchResults.slice(0, 5);
+    const scrapedData = await scrapeTopResults(top5Results);
+console.log(scrapedData)
+    res.json(scrapedData);
   } catch (error) {
-    console.error('Error occurred during the search:', error);
-    res.status(500).json({ error: 'An error occurred during the search' });
+    res.status(500).json({ error: 'An error occurred' });
   }
 });
 
-// Function to perform the Google search using Puppeteer
-const performGoogleSearch = async (query) => {
-  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  defaultViewport: null,
-  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36'}); // Set headless to false to see the browser actions
+async function googleSearch(query) {
+  const browser = await puppeteer.launch({
+          headless: 'new',
+          args: ['--no-sandbox', '--disable-setuid-sandbox'],
+          defaultViewport: null,
+          userAgent:
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
+        });
   const page = await browser.newPage();
 
-  try {
-    const url = `https://www.google.com/search?q=${query}`;
-    await page.goto(url, { waitUntil: 'domcontentloaded' , timeout: 30000});
+  const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+  await page.goto(searchUrl);
 
-    // Wait for the search results to load
-    await page.waitForSelector('div.g', { timeout: 20000 });
+  // Wait for the search results to load (I adjusted the selector (P) depending on the Google search page layouts I checked)
+  await page.waitForSelector('h3');
 
-    // Extract the search results
-    const searchResults = await page.evaluate(() => {
-      const results = document.querySelectorAll('div.g');
-
-      const urls = Array.from(results).slice(0, 5).map((result) => {
-        const link = result.querySelector('a');
-        return link.href;
-      })
-      return urls;
+  const searchResults = await page.evaluate(() => {
+    const results = [];
+    const searchElements = document.querySelectorAll('h3');
+    searchElements.forEach((element) => {
+      results.push(element.parentElement.href);
     });
+    return results;
+  });
+
+  await browser.close();
+  return searchResults;
+}
 
 
-    return searchResults;
-  } catch (error) {
-    console.error('Error during Google search:', error);
-    return [];
-  } finally {
-    await browser.close();
-  }
-};
+async function scrapeTopResults(topResults) {
+  const scrapedData = [];
 
-
-const scrapeUrls = async (urls) => {
-  const concurrencyLimit = 5; // Adjust the concurrency limit as needed
-
-  try {
-    let allContent = '';
-    const scrapedData = [];
-    const browser = await puppeteer.launch({
-      headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      defaultViewport: null,
-      userAgent:
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
-    });
-    const pages = await Promise.all(
-      Array.from({ length: concurrencyLimit }).map(async () => {
-        const page = await browser.newPage();
-
-        // Enable request interception
-        await page.setRequestInterception(true);
-
-        // Intercept requests to exclude certain file types (e.g., JavaScript)
-        page.on('request', (request) => {
-          if (request.resourceType() === 'script') {
-            request.abort();
-          } else {
-            request.continue();
-          }
-        });
-
-        return page;
-      })
-    );
-    // Split the URLs into smaller chunks based on the concurrency limit
-    const urlChunks = [];
-    for (let i = 0; i < urls.length; i += concurrencyLimit) {
-      urlChunks.push(urls.slice(i, i + concurrencyLimit));
-    }
-
-    const processChunk = async (chunk) => {
+  for (const result of topResults) {
+    try {
+        const browser = await puppeteer.launch({
+          //headless:new >> modern headless puppeteer
+        headless: 'new',
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        defaultViewport: null,
+        userAgent:
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
+      });
       const page = await browser.newPage();
+      await page.goto(result);
 
-      for (const url of chunk) {
-        const urlData = {
-          url,
-          content: '',
-        };
+      const contentText = await page.evaluate(() => {
+        // Sample code to extract content text from the page (p selector for paragraphs hwowever some modern sites go with main and article selectors, but basically they end up with paragraphs)
+        const paragraphs = Array.from(document.querySelectorAll('p'));
+        return paragraphs.map(p => p.innerText).join('\n');
+      });
 
-        try {
-          await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-          await page.evaluate(() => {
-            window.scrollTo(0, document.body.scrollHeight);
-          });
+      scrapedData.push({ url: result, content: contentText });
 
-          // Wait for the element that contains the main content to appear
-          await page.waitForSelector('main', { timeout: 20000 });
-
-          const bodyText = await page.evaluate(() => {
-            const bodyElements = document.querySelectorAll('main'); // Adjust this selector as needed
-            return Array.from(bodyElements).map((element) => element.innerText).join('\n');
-          });
-          urlData.content = bodyText;
-
-          // Accumulate content for saving to a single file
-          allContent += `URL: ${url}\n${bodyText}\n\n`;
-        } catch (error) {
-          console.error(`Error occurred while scraping ${url}:`, error);
-        }
-        scrapedData.push(urlData);
-      }
-
-      await page.close();
-    };
-
-    // Run the chunks concurrently
-    await Promise.all(urlChunks.map(processChunk)); 
-
-    // Write all the accumulated content to a single text file
-    const filename = `scraped_all_${Date.now()}.txt`;
-    fs.writeFileSync(filename, allContent);
-    console.log(`All scraped data has been saved to ${filename}`);
-
-    await browser.close();
-
-    return scrapedData;
-  } catch (error) {
-    console.error('Error during scraping:', error);
-    return [];
+      await browser.close();
+    } catch (error) {
+      // Handle errors gracefully if any of the pages fail to load or scrape.
+      console.error('Error scraping page:', error);
+    }
   }
-};
 
+  return scrapedData;
+}
 
-
-const port = 3001;
-app.listen(port, () => {
-  console.log(`Server is listening on http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });

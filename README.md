@@ -47,8 +47,9 @@ And, scraping the main context using certain CSS selectors like 'main'|'article'
 then finally writing into txt file the whole resulted texts appended so it becomes easier to search to see how many -only if- the search query exists in that txt file or not to ouput with the final percentage of the plagiarism
 <br> The next missing is to implement a higher order func to accept paragraphs, split it into individual sentences so that each phrase runs the defined flow functions in this current repo. <br> that's the logic uf you guys have something better of implementation just fork
 <br><br>
-![Screenshot 2023-07-25 004114](https://github.com/Ebrahim-Ramadan/PlagiarismChecker-ExpressJS/assets/65041082/4346f5fe-dc44-4fd7-a307-b4f0ed8d2d78)
-![Uploading Screenshot 2023-07-25 004058.png…]()
+https://github.com/Ebrahim-Ramadan/PlagiarismChecker-ExpressJS/assets/65041082/4346f5fe-dc44-4fd7-a307-b4f0ed8d2d78
+<br>
+https://github.com/Ebrahim-Ramadan/PlagiarismChecker-ExpressJS/assets/65041082/3cfd0a7c-3e8e-4177-ad1c-93f5b9221307
 
 <br>
 <br>

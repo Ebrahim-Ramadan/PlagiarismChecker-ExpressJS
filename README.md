@@ -63,3 +63,10 @@ the whole process takes around 2851.7ms per URL visit
 <br>
 day2=> Added TfIdf and cosine similarity to calculate the text similarity between the quered phrase and the significant words of the scrapped data -- step one to finalize the plagiarism checking percentage big part lets celebrate
 
+<br><br><br>
+##steps to follow
+###make a GET request in postman (or whatever you're testing your API with) to that endpoint
+<br>
+http://localhost:3000/search/:query
+<br>
+with replacing query witht the URLencoded search phrase, you will be tracking the step-by-step process in the server log + scrapped resutls + urls wil appear at a json response in postman, too
